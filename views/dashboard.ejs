@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIZZARIA</title>
+</head>
+<body>
+    <h2>Bem vindo, <%= usuario.nome %>!</h2>
+
+    <a href="/logout">Sair</a>
+
+    <h3>Buscar pizza</h3>
+    <form method="get" action="/dashboard">
+        <input type="text" name="busca" value="<%= busca %>" placeholder="Digite o nome da pizza">
+        <button type="submit">Buscar</button>
+    </form>
+
+    <h3>Criar pizza</h3>
+    <form method="post" action="/pizzas">
+        <input name="nome" placeholder="Nome da Pizza" required>
+        <input name="preco" type="number" step="0.01" placeholder="Preço" required>
+        <input name="estoque" type="number" placeholder="Estoque" value="10">
+        <button type="submit">Criar Pizza</button>
+    </form>
+
+    <h3>Lista de Pizzas</h3>
+    <ul>
+        <% pizzas.forEach(function(pizza) { %>
+            <li>
+                <strong><%= pizza.nome %></strong> - R$ <%= pizza.preco %> (Estoque: <%= pizza.estoque %>)
+                <% if (pizza.estoque < 5) { %>
+                    <b>Estoque Baixo!</b>
+                <% } %>
+                <form method="post" action="/pizzas/update/<%= pizza.id %>">
+                    <input name="nome" value="<%= pizza.nome %>" required>
+                    <input name="preco" type="number" step="0.01" value="<%= pizza.preco %>" required>
+                    <input name="estoque" type="number" value="<%= pizza.estoque %>" required>
+                    <button type="submit">Atualizar</button>
+                </form>
+                <form method="post" action="/pizzas/delete/<%= pizza.id %>">
+                    <button type="submit">Deletar</button>
+                </form>
+            </li>
+        <% }) %>
+    </ul>
+
+    <h3>Registrar venda</h3>
+    <form method="post" action="/vendas">
+        <select name="pizza_id">
+            <% pizzas.forEach(1=> { %> 
+            <option value="<%= l.id %>">
+                <%= l.nome %>
+            </option>
+            <% }) %>
+        </select>
+        <input type="number" name="quantidade" value="1" min="1">
+        <button type="submit">Registrar Venda</button>
+    </form>
+</body>
+</html>

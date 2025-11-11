@@ -1,7 +1,7 @@
 import express from "express";
 import session from "express-session";
 import { Pool } from "pg";
-import { path } from "path";
+import path from "path";
 import { fileURLToPath } from "url";
 
 const app = express();
@@ -59,7 +59,7 @@ app.get("/logout", (req, res) => {
 // dashboard
 app.get("/dashboard", protect, async (req, res) => {
   const busca = req.query.busca || "";
-  const query = busca 
+  const query = busca
     ? "SELECT * FROM pizzas WHERE nome ILIKE $1 ORDER BY nome"
     : "SELECT * FROM pizzas ORDER BY nome";
   const pizzas = await pool.query(query, busca ? [`%${busca}%`] : []);
@@ -74,34 +74,37 @@ app.get("/dashboard", protect, async (req, res) => {
   });
 });
 
-// registrar pizza 
-app.post('/pizzas', protect, async (req, res) => {
-    const { nome, preco, estoque } = req.body;
-    if (!nome || !preco ) return req.setEncoding('Preencher os campos obrigatórios');
-    await pool.query(
-      'INSERT INTO pizzas (nome, preco, estoque) VALUES ($1, $2, $3)',
-      [nome, preco, estoque || 0]
-    );
-    res.redirect('/dashboard');
+// registrar pizza
+app.post("/pizzas", protect, async (req, res) => {
+  const { nome, preco, estoque } = req.body;
+  if (!nome || !preco) {
+    // campos obrigatórios não preenchidos - redireciona ao dashboard
+    return res.redirect("/dashboard");
+  }
+  await pool.query(
+    "INSERT INTO pizzas (nome, preco, estoque) VALUES ($1, $2, $3)",
+    [nome, preco, estoque || 0]
+  );
+  res.redirect("/dashboard");
 });
 
-// ATUALIZAR PIZZA 
-app.post('/pizzas/update/:id', protect, async (req, res) => {
-    const { id } = req.params;
-    const { nome, preco, estoque } = req.body;
-    await pool.query(
-      'UPDATE pizzas SET nome = $1, preco = $2, estoque = $3 WHERE id = $4',
-      [nome, preco, estoque, id]
-    );
-    res.redirect('/dashboard');
+// ATUALIZAR PIZZA
+app.post("/pizzas/update/:id", protect, async (req, res) => {
+  const { id } = req.params;
+  const { nome, preco, estoque } = req.body;
+  await pool.query(
+    "UPDATE pizzas SET nome = $1, preco = $2, estoque = $3 WHERE id = $4",
+    [nome, preco, estoque, id]
+  );
+  res.redirect("/dashboard");
 });
 
 // DELETAR PIZZA,0
 
-app.post('/pizzas/delete/:id', protect, async (req, res) => {
-    const { id } = req.params;
-    await pool.query('DELETE FROM pizzas WHERE id = $1', [id]);
-    res.redirect('/dashboard');
+app.post("/pizzas/delete/:id", protect, async (req, res) => {
+  const { id } = req.params;
+  await pool.query("DELETE FROM pizzas WHERE id = $1", [id]);
+  res.redirect("/dashboard");
 });
 
 // Server
