@@ -96,9 +96,15 @@ app.post('/pizzas/update/:id', protect, async (req, res) => {
     res.redirect('/dashboard');
 });
 
-// DELETAR PIZZA
+// DELETAR PIZZA,0
+
 app.post('/pizzas/delete/:id', protect, async (req, res) => {
     const { id } = req.params;
     await pool.query('DELETE FROM pizzas WHERE id = $1', [id]);
     res.redirect('/dashboard');
+});
+
+// Server
+app.listen(3000, () => {
+  console.log("Servidor rodando em http://localhost:3000");
 });
